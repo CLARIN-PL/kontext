@@ -510,7 +510,7 @@ class Actions(Kontext):
             corpname = default_corp_list[0]
         return corpname
 
-    def _get_search_retrieve_tree(self, parameters, results, number_of_records, start_row=1, max_records=250, ns='sru'):
+    def _get_search_retrieve_tree(self, parameters, results, number_of_records, start_row=1, max_records=250):
         """
         Creates xml.etree.ElementTree object for fcs search retrieve site.
         :param parameters: dict
@@ -518,9 +518,10 @@ class Actions(Kontext):
         :param number_of_records: int
         :param start_row: int
         :param max_records: int
-        :param ns: str, namespace
         :return:
         """
+
+        results = results[start_row-1:start_row-1+max_records]
 
         def _create_hit_element(pre, hit, post):
             el = ET.Element('hits:Result')
@@ -592,11 +593,10 @@ class Actions(Kontext):
         out.insert(MAX_INT, error_tree)
         return out
 
-    def _create_scan_response(self, results, parameters):
+    def _create_scan_response(self, results):
         """
         Creates xml.etree.ElementTree object for fcs scan response.
         :param results:
-        :param parameters:
         :return:
         """
 
