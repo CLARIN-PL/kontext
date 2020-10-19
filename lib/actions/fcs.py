@@ -14,6 +14,7 @@ import math
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
 import sys
+from pprint import pprint
 
 
 _logger = logging.getLogger(__name__)
@@ -650,7 +651,8 @@ class Actions(Kontext):
     @exposed(return_type='xml', skip_corpus_init=True, http_method=('GET', 'HEAD'))
     def v2(self, req):
         """
-        Returns response for FCS, version 2 request.
+        Returns response for FCS, version 2 request by default.
+        When version argument in request is set to 1.2 fcs is handled by self.v1 function.
         :param req: incoming request
         :return: str, FCS response
         """
@@ -694,6 +696,13 @@ class Actions(Kontext):
         error_data = None
 
         try:
+            # checking fcs version
+            version = req.args.get('version', None)
+            if float(version) == 1.2:
+                return self.v1(req)
+            if version is not None and float(data['version']) != float(version):
+                raise Exception(5, version, 'Unsupported version')
+
             # set content-type in HTTP header
             recordXmlEscaping = req.args.get('recordXMLEscaping', 'xml')
             if recordXmlEscaping == 'string':
